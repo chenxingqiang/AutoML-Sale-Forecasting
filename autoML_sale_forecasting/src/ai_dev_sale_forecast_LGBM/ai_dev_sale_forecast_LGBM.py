@@ -561,10 +561,9 @@ for i in range(num_days):
     X_tmp5 = X_tmp5.reindex(df_time_store_class_index).reset_index(drop=True)
 
     X_tmp = pd.concat([X_tmp, X_tmp2, X_tmp3, X_tmp4, X_tmp5, items_info.reset_index(), stores.reset_index()], axis=1)
-    # X_con = pd.concat([X_con1, X_con2, X_con3, X_con4,X_con5,X_con6,X_con7,X_con8,X_con9, stores.reset_index()[['storeid']]], axis=1)
-
-    # X_tmp_con = pd.merge(X_tmp,X_con,how='left',on='storeid')
-    X_tmp_con = X_tmp
+    # Merge external factors (weather, AQI, calendar) into training features
+    X_con = pd.concat([X_con1, X_con2, X_con3, X_con4, X_con5, X_con6, X_con7, X_con8, X_con9, stores.reset_index()[['storeid']]], axis=1)
+    X_tmp_con = pd.merge(X_tmp, X_con, how='left', on='storeid')
     X_tmp_con['storeid'] = X_tmp_con.storeid.map({'A035': 35})
     X_l.append(X_tmp_con)
     y_l.append(y_tmp)
@@ -647,12 +646,11 @@ X_val5.index = df_time_store_class.index
 X_val5 = X_val5.reindex(df_time_store_class_index).reset_index(drop=True)
 
 X_val_tmp = pd.concat([X_val, X_val2, X_val3, X_val4, X_val5, items_info.reset_index(), stores.reset_index()], axis=1)
-# X_con_val = pd.concat(
-# [X_con_val1, X_con_val2, X_con_val3, X_con_val4, X_con_val5, X_con_val6, X_con_val7, X_con_val8, X_con_val9,
-# stores.reset_index()[['storeid']]], axis=1)
-
-# X_val = pd.merge(X_val_tmp, X_con_val, how='left', on='storeid')
-X_val = X_val_tmp
+# Merge external factors (weather, AQI, calendar) into validation features
+X_con_val = pd.concat(
+    [X_con_val1, X_con_val2, X_con_val3, X_con_val4, X_con_val5, X_con_val6, X_con_val7, X_con_val8, X_con_val9,
+     stores.reset_index()[['storeid']]], axis=1)
+X_val = pd.merge(X_val_tmp, X_con_val, how='left', on='storeid')
 X_val['storeid'] = X_val.storeid.map({'A035': 35})
 
 X_test = prepare_dataset(df_time, 'promotion_x', promo_time, PRE_DATE, is_train=False)
@@ -727,17 +725,16 @@ X_test5 = X_test5.reindex(df_time_store_class_index).reset_index(drop=True)
 
 X_test_tmp = pd.concat([X_test, X_test2, X_test3, X_test4, X_test5, items_info.reset_index(), stores.reset_index()],
                        axis=1)
-# X_con_test = pd.concat(
-# [X_con_test1, X_con_test2, X_con_test3, X_con_test4, X_con_test5, X_con_test6, X_con_test7, X_con_test8,
-# X_con_test9, stores.reset_index()[['storeid']]], axis=1)
-
-# X_test = pd.merge(X_test_tmp, X_con_test, how='left', on='storeid')
-X_test = X_test_tmp
+# Merge external factors (weather, AQI, calendar) into test features
+X_con_test = pd.concat(
+    [X_con_test1, X_con_test2, X_con_test3, X_con_test4, X_con_test5, X_con_test6, X_con_test7, X_con_test8,
+     X_con_test9, stores.reset_index()[['storeid']]], axis=1)
+X_test = pd.merge(X_test_tmp, X_con_test, how='left', on='storeid')
 X_test['storeid'] = X_test.storeid.map({'A035': 35})
 
 del X_test2, X_test3, X_test4, X_test5, X_val2, df_time_item, promo_time_item, df_time_store_class, df_time_promo_store_class, df_time_store_class_index
-del X_con_test1, X_con_test2, X_con_test3, X_con_test4, X_con_test5, X_con_test6, X_val3, X_val4, X_val5
-del X_con_val1, X_con_val2, X_con_val3, X_con_val4, X_con_val5, X_con_val6, X_con_val7, X_con_val8, X_con_val9
+del X_con_test1, X_con_test2, X_con_test3, X_con_test4, X_con_test5, X_con_test6, X_con_test7, X_con_test8, X_con_test9, X_val3, X_val4, X_val5
+del X_con_val1, X_con_val2, X_con_val3, X_con_val4, X_con_val5, X_con_val6, X_con_val7, X_con_val8, X_con_val9, X_con, X_con_val, X_con_test
 del condition_time_store, AQI_time_store, tem_time_store, pre1h_time_store, windspeed_time_store, rhu_time_store, weekday_time_store, term24_name_cn_time_store
 del holiday_bylaw_time_store, day_type_time_store
 
